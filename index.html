@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Type & Play</title>
+  <link rel="stylesheet">
+</head>
+<body>
+  <div class="scroll-wrapper">
+    <div class="row"> <!-- 原本的 row 保留居中 -->
+    </div>
+  </div>
+  <h1>🎹 Play Accordion with Your Keyboard</h1>
+  <p>Use the arrow keys ⬅️➡️ to shift the pitch range.</p>
+  <div id="controls">
+  <label for="volumeSlider">Volume：</label>
+  <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.8" style="width: 600px;">
+<div id="reverbControls">
+  <label for="durationSlider">Reverb：</label>
+  <input
+    id="durationSlider"
+    type="range"
+    min="0.0"
+    max="5"
+    step="0.1"
+    value="0.5"
+    style="width: 300px"
+  />
+</div>
+</div>
+  <div id="loading">🔊 Loading audio...</div>
+  <div id="systemSelector">
+    <button id="cSystemBtn">C-system</button>
+    <button id="bSystemBtn">B-system</button>
+  </div>
+  <div id="app"></div>
+  <pre id="output"></pre>
+</body>
+</html>
