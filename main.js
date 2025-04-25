@@ -106,12 +106,10 @@ async function loadAudio() {
   
   // 控制 reverb duration 滑桿
   const durationSlider = document.getElementById("durationSlider");
-  const durationValue = document.getElementById("durationValue");
-
+	
   durationSlider.addEventListener("input", () => {
     duration = parseFloat(durationSlider.value);
-    durationValue.textContent = duration.toFixed(1);
-
+	  
     // 重新產生新的 IR 並替換
     const newReverb = createWhiteNoiseReverb(audioCtx, duration, decay);
     if (reverb) {
