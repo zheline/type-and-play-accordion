@@ -106,10 +106,10 @@ async function loadAudio() {
   
   // 控制 reverb duration 滑桿
   const durationSlider = document.getElementById("durationSlider");
-	
+
   durationSlider.addEventListener("input", () => {
     duration = parseFloat(durationSlider.value);
-	  
+
     // 重新產生新的 IR 並替換
     const newReverb = createWhiteNoiseReverb(audioCtx, duration, decay);
     if (reverb) {
@@ -146,31 +146,38 @@ function playNote(midi) {
   if (sources[midi]) return; // 已在播放，不重播
 
   const attackSource = audioCtx.createBufferSource();
+  const attackGain = audioCtx.createGain();
   attackSource.buffer = attackBuffer;
   
   const semitoneDiff = midi - 66;
   const playbackRate = Math.pow(2, semitoneDiff / 12);
   attackSource.playbackRate.value = playbackRate;
    // 加上 loop start / end
-  attackSource.connect(dryGain);
-  attackSource.connect(reverb);
+  attackSource.connect(attackGain);
+  attackGain.connect(dryGain);
+  attackGain.connect(reverb);
   attackSource.start(0);
   
   const loopSource = audioCtx.createBufferSource();
+  const loopGain = audioCtx.createGain();
   loopSource.buffer = loopBuffer;
   loopSource.loop = true;
   loopSource.loopStart = 0; // 可視音檔內容調整
   loopSource.loopEnd = loopBuffer.duration;
   loopSource.playbackRate.value = playbackRate;
-  loopSource.connect(dryGain);
-  loopSource.connect(reverb);
+  loopSource.connect(loopGain);
+  loopGain.connect(dryGain);
+  loopGain.connect(reverb);
 
   // 播放時間：接在 attack 結束後一點點，避免接縫突兀
   const attackDuration = attackBuffer.duration / attackSource.playbackRate.value;
   loopSource.start(audioCtx.currentTime + attackDuration);
 
   // 一起記錄起來
-  sources[midi] = [attackSource, loopSource];
+  sources[midi] = [
+  { source: attackSource, gain: attackGain },
+  { source: loopSource, gain: loopGain }
+];
 }
 
 function stopNote(midi) {
@@ -184,10 +191,16 @@ function stopNote(midi) {
     const src = sources[midi];
     if (src) {
     	console.log(`[STOP] 停止播放音符：${midi}`);
-      src.forEach(src => {
-        src.stop();
-        src.disconnect();
-      })
+      src.forEach(({ source, gain }) => {
+        if (gain && gain.gain) {
+          // 緩慢淡出 0.1 秒
+          gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+        }
+        source.onended = () => {
+          source.disconnect();
+        };
+        source.stop(audioCtx.currentTime + 0.05);
+      });
       delete sources[midi];
     }
     delete noteCounts[midi];
