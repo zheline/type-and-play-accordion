@@ -71,11 +71,11 @@ function createWhiteNoiseReverb(audioCtx, duration = 0.5, decay = 5) {
 async function loadAudio() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   
-  const response = await fetch("https://raw.githubusercontent.com/zheline/accordion-sounds/main/accordion-attacked-shot.mp3");
+  const response = await fetch("./sounds/accordion-attacked-shot.mp3");
   const arrayAttackBuffer = await response.arrayBuffer();
   attackBuffer = await audioCtx.decodeAudioData(arrayAttackBuffer);
   
-  const loopResponse = await fetch("https://raw.githubusercontent.com/zheline/accordion-sounds/main/accordion-sustained-shot.mp3");
+  const loopResponse = await fetch("./sounds/accordion-sustained-shot.mp3");
   const loopArrayBuffer = await loopResponse.arrayBuffer();
   loopBuffer = await audioCtx.decodeAudioData(loopArrayBuffer);
   
